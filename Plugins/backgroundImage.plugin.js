@@ -3,7 +3,7 @@
  * @author KiNa
  * @authorId 252100217959219200
  * @version 1.0
- * @description Pick A random background Image from a list
+ * @description Pick A random background Image from a list. Important!! This plugin only works with better discord theme "NotAnotherAnimeTheme" for now
  * @source https://github.com/mwittrien/BetterDiscordAddons/tree/master/Plugins/backgroundImage/
  * @updateUrl https://mwittrien.github.io/BetterDiscordAddons/Plugins/backgroundImage.plugin.js
  */
@@ -18,7 +18,7 @@ module.exports = (_ => {
             "name": "backgroundImage",
             "author": "KiNa",
             "version": "1.0",
-            "description": "Pick a random background Image from a list"
+            "description": "Pick A random background Image from a list. Important!! This plugin only works with better discord theme 'NotAnotherAnimeTheme' for now"
         },
         "changeLog": {}
     };
@@ -252,14 +252,13 @@ module.exports = (_ => {
                     this.forceUpdateAll();
                 }
                 this.forceUpdateAll();
+                this.changeimage();
             }
 
             forceUpdateAll() {
                 const loadedList = BDFDB.DataUtils.load(this, "urlsList");
                 urlsList = Object.assign(!loadedList ? { "": { enabled: true, value: loadedList.value } } : {}, loadedList);
-
                 settings = BDFDB.DataUtils.get(this, "settings");
-
                 BDFDB.PatchUtils.forceAllUpdates(this);
             }
         }
