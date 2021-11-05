@@ -76,7 +76,7 @@ module.exports = (_ => {
                 this.defaults = {
                     general: {
                         changealart: {
-                            value: true,
+                            value: false,
                             description: "Show change image alart"
                         },
                     },
@@ -103,7 +103,7 @@ module.exports = (_ => {
                         i++
                     }
                 };
-                if (!List) return
+                if (!List || List.length == 0) return
                 let random = List[Math.floor(Math.random() * List.length)];
                 try {
                     appMount.style.setProperty("background-image", "url(" + random + ")");
