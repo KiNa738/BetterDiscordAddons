@@ -2,7 +2,7 @@
  * @name backgroundImage
  * @author KiNa
  * @authorId 252100217959219200
- * @version 0.0.3
+ * @version 0.0.4
  * @description Pick A random background Image from a list. Important!! This plugin only works with better discord theme "NotAnotherAnimeTheme v3.2" for now
  * @source https://github.com/mwittrien/BetterDiscordAddons/tree/master/Plugins/backgroundImage/
  * @updateUrl https://mwittrien.github.io/BetterDiscordAddons/Plugins/backgroundImage.plugin.js
@@ -17,12 +17,13 @@ module.exports = (_ => {
         "info": {
             "name": "backgroundImage",
             "author": "KiNa#4741",
-            "version": "0.0.3",
+            "version": "0.0.4",
             "description": "Pick A random background Image from a list. Important!! This plugin only works with better discord theme 'NotAnotherAnimeTheme' for now"
         },
         "changeLog": {
             "added": {
-                "Auto change image": "Added option to auto refresh your image"
+                "Auto change image": "Added option to auto refresh your image",
+                "Gif background": "Yes, you can add a fkin gif background now. Sheeeeesh"
             }
         }
     };
@@ -225,7 +226,7 @@ module.exports = (_ => {
                                                 let url = settingsPanel.props._node.querySelector(".input-link " + BDFDB.dotCN.input).value.trim();
                                                 if (!name || name.length == 0) return BDFDB.NotificationUtils.toast("Fill out all fields to add a new Image.", { type: "danger" });
                                                 else if (urlsList[name]) return BDFDB.NotificationUtils.toast("the choosen Name already exists, please choose another Name", { type: "danger" });
-                                                else if (!validURL(url.toString()) && (url.substring(url.length - 3) !== 'png' || url.substring(url.length - 3) !== 'jpg')) return BDFDB.NotificationUtils.toast("The choosen link is not a valid url, Any images you use MUST end with .jpg or .png", { type: "danger" }); //todo
+                                                else if (!validURL(url.toString()) && (url.substring(url.length - 3) !== 'png' || url.substring(url.length - 3) !== 'jpg' || url.substring(url.length - 3) !== 'gif')) return BDFDB.NotificationUtils.toast("The choosen link is not a valid url, Any images you use MUST end with .jpg or .png", { type: "danger" }); //todo
                                                 else {
                                                     urlsList[name] = { enabled: true, value: url.toString() };
                                                     BDFDB.DataUtils.save(urlsList, this, "urlsList");
