@@ -2,8 +2,8 @@
  * @name backgroundImage
  * @author KiNa
  * @authorId 252100217959219200
- * @version 1.0
- * @description Pick A random background Image from a list. Important!! This plugin only works with better discord theme "NotAnotherAnimeTheme" for now
+ * @version 0.0.3
+ * @description Pick A random background Image from a list. Important!! This plugin only works with better discord theme "NotAnotherAnimeTheme v3.2" for now
  * @source https://github.com/mwittrien/BetterDiscordAddons/tree/master/Plugins/backgroundImage/
  * @updateUrl https://mwittrien.github.io/BetterDiscordAddons/Plugins/backgroundImage.plugin.js
  */
@@ -16,11 +16,15 @@ module.exports = (_ => {
     const config = {
         "info": {
             "name": "backgroundImage",
-            "author": "KiNa",
-            "version": "1.0",
+            "author": "KiNa#4741",
+            "version": "0.0.3",
             "description": "Pick A random background Image from a list. Important!! This plugin only works with better discord theme 'NotAnotherAnimeTheme' for now"
         },
-        "changeLog": {}
+        "changeLog": {
+            "added": {
+                "Auto change image": "Added option to auto refresh your image"
+            }
+        }
     };
 
     return (window.Lightcord && !Node.prototype.isPrototypeOf(window.Lightcord) || window.LightCord && !Node.prototype.isPrototypeOf(window.LightCord) || window.Astra && !Node.prototype.isPrototypeOf(window.Astra)) ? class {
@@ -71,31 +75,53 @@ module.exports = (_ => {
     } : (([Plugin, BDFDB]) => {
         var settings = {}
         var urlsList = {}
+        var mainLoopId = ''
+
         return class backgroundImage extends Plugin {
             onLoad() {
                 this.defaults = {
                     general: {
                         changealart: {
                             value: false,
-                            description: "Show change image alart"
+                            description: "Show change image alart?"
                         },
+                        refreshimage: {
+                            value: false,
+                            description: "Refresh background image?"
+                        },
+                    },
+                    amounts: {
+                        refreshtime: {
+                            value: 1,
+                            min: 1,
+                            description: "Change Background image every (in minutes)"
+                        }
                     },
                 }
             };
             onStart() {
                 this.changeimage();
                 this.forceUpdateAll();
+                if (this.settings.general.refreshimage) {
+                    if (mainLoopId) clearInterval(mainLoopId);
+                    mainLoopId = setInterval(function() {
+                        this.change = new backgroundImage;
+                        this.change.changeimage()
+                    }, (this.settings.amounts.refreshtime > this.defaults.amounts.refreshtime.min) ? this.settings.amounts.refreshtime * 60000 : this.defaults.amounts.refreshtime.min * 60000)
+                }
             }
             onStop() {
                 this.cleanup();
                 this.forceUpdateAll();
+                clearInterval(mainLoopId);
             }
             changeimage() {
                 let appMount = document.querySelector(BDFDB.dotCN.appmount);
 
                 let List = []
-                const urlList = BDFDB.DataUtils.load(this, "urlsList");
+                const urlList = BDFDB.DataUtils.load(backgroundImage, "urlsList");
                 const propertyNames = Object.values(urlList)
+
                 let i = 0;
                 for (const v of propertyNames) {
                     if (v.enabled) {
@@ -108,7 +134,8 @@ module.exports = (_ => {
                 try {
                     appMount.style.setProperty("background-image", "url(" + random + ")");
                 } catch (err) { BdApi.alert("Error", "Could not"); }
-                if (this.settings.general.changealart) BdApi.alert("Background image", `Your Image: ${random}`);
+                const obj = BDFDB.DataUtils.load(backgroundImage, "general");
+                if (obj.changealart /*&& !obj.refreshimage*/ ) BdApi.alert("Background image", `Your Image: ${random}`);
             }
             cleanup() {
                 try {
@@ -131,8 +158,32 @@ module.exports = (_ => {
                                 plugin: this,
                                 keys: ["general", key],
                                 label: this.defaults.general[key].description,
-                                value: this.settings.general[key]
-                            }))
+                                value: this.settings.general[key],
+                                onClick: _ => {
+                                    if (key == 'refreshimage') {
+                                        if (this.settings.general.refreshimage) {
+                                            clearInterval(mainLoopId);
+                                        } else {
+                                            if (mainLoopId) clearInterval(mainLoopId);
+                                            mainLoopId = setInterval(function() {
+                                                this.change = new backgroundImage;
+                                                this.change.changeimage()
+                                            }, (this.settings.amounts.refreshtime > this.defaults.amounts.refreshtime.min) ? this.settings.amounts.refreshtime * 60000 : this.defaults.amounts.refreshtime.min * 60000)
+                                        }
+                                    }
+                                }
+                            })).concat(Object.keys(this.defaults.amounts).map(key => BDFDB.ReactUtils.createElement(BDFDB.LibraryComponents.SettingsSaveItem, {
+                                type: "TextInput",
+                                plugin: this,
+                                keys: ["amounts", key],
+                                label: this.defaults.amounts[key].description,
+                                basis: "30%",
+                                childProps: { type: "number" },
+                                min: this.defaults.amounts[key].min,
+                                max: this.defaults.amounts[key].max,
+                                value: this.settings.amounts[key],
+                                placeholder: "minutes"
+                            })))
                         }));
                         settingsItems.push(BDFDB.ReactUtils.createElement(BDFDB.LibraryComponents.CollapseContainer, {
                             title: "Image List",
@@ -253,14 +304,22 @@ module.exports = (_ => {
                 }
                 this.forceUpdateAll();
                 this.changeimage();
-            }
+                if (this.settings.general.refreshimage) {
+                    if (mainLoopId) clearInterval(mainLoopId);
+                    mainLoopId = setInterval(function() {
+                        this.change = new backgroundImage;
+                        this.change.changeimage()
+                    }, (this.settings.amounts.refreshtime > this.defaults.amounts.refreshtime.min) ? this.settings.amounts.refreshtime * 60000 : this.defaults.amounts.refreshtime.min * 60000)
+                }
+            };
 
             forceUpdateAll() {
                 const loadedList = BDFDB.DataUtils.load(this, "urlsList");
                 urlsList = Object.assign(!loadedList ? { "": { enabled: true, value: loadedList.value } } : {}, loadedList);
                 settings = BDFDB.DataUtils.get(this, "settings");
                 BDFDB.PatchUtils.forceAllUpdates(this);
-            }
+            };
+
         }
     })(window.BDFDB_Global.PluginUtils.buildPlugin(config));
 })();
