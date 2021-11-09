@@ -2,7 +2,7 @@
  * @name backgroundImage
  * @author KiNa
  * @authorId 252100217959219200
- * @version 0.0.4
+ * @version 0.0.5
  * @description Pick A random background Image from a list. Important!! This plugin only works with better discord theme "NotAnotherAnimeTheme v3.2" for now
  * @source https://github.com/mwittrien/BetterDiscordAddons/tree/master/Plugins/backgroundImage/
  * @updateUrl https://mwittrien.github.io/BetterDiscordAddons/Plugins/backgroundImage.plugin.js
@@ -23,7 +23,7 @@ module.exports = (_ => {
         "info": {
             "name": "backgroundImage",
             "author": "KiNa#4741",
-            "version": "0.0.4",
+            "version": "0.0.5",
             "description": "Pick A random background Image from a list. Important!! This plugin only works with better discord theme 'NotAnotherAnimeTheme' for now"
         },
         "changeLog": {
