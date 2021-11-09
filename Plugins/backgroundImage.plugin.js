@@ -2,16 +2,11 @@
  * @name backgroundImage
  * @author KiNa
  * @authorId 252100217959219200
- * @version 0.0.5
+ * @version 0.0.6
  * @description Pick A random background Image from a list. Important!! This plugin only works with better discord theme "NotAnotherAnimeTheme v3.2" for now
- * @source https://github.com/mwittrien/BetterDiscordAddons/tree/master/Plugins/backgroundImage/
- * @updateUrl https://mwittrien.github.io/BetterDiscordAddons/Plugins/backgroundImage.plugin.js
+ * @source https://github.com/KiNa738/BetterDiscordAddons/tree/main/Plugins
+ * @updateUrl https://github.com/KiNa738/BetterDiscordAddons/blob/main/Plugins/backgroundImage.plugin.js
  */
-
-/*//===
-TODO
-the plugin only works with theme. Check if user using a theme?
-\*/
 
 const fs = require("fs");
 const request = require("request");
@@ -23,8 +18,8 @@ module.exports = (_ => {
         "info": {
             "name": "backgroundImage",
             "author": "KiNa#4741",
-            "version": "0.0.5",
-            "description": "Pick A random background Image from a list. Important!! This plugin only works with better discord theme 'NotAnotherAnimeTheme' for now"
+            "version": "0.0.6",
+            "description": "Pick A random background Image from a list. Important!! This plugin only works with better discord theme 'NotAnotherAnimeTheme v3.2' for now"
         },
         "changeLog": {
             "added": {
@@ -83,11 +78,13 @@ module.exports = (_ => {
         var settings = {}
         var urlsList = {}
         var mainLoopId = ''
+        var formats = ['png', 'jpg', 'gif', 'bmp'];
 
         return class backgroundImage extends Plugin {
             onLoad() {
-                let theme = document.querySelector(BDFDB.dotCN.appmount).style.getPropertyValue("background-image")
-                if (!theme) {
+                BDFDB.BDUtils.enableTheme('NotAnotherAnimeTheme', true);
+                //let theme = document.querySelector(BDFDB.dotCN.appmount).style.getPropertyValue("background-image")
+                if (!BDFDB.BDUtils.getTheme('NotAnotherAnimeTheme')) {
                     window.BDFDB_Global.downloadModal = true;
                     BdApi.showConfirmationModal("Theme Missing", `The Theme needed for ${config.info.name} is missing. Please click "Download Now" to install it.`, {
                         confirmText: "Download Now",
@@ -105,28 +102,26 @@ module.exports = (_ => {
                 }
                 this.defaults = {
                     general: {
-                        changealart: {
-                            value: false,
-                            description: "Show change image alart?"
-                        },
-                        refreshimage: {
-                            value: false,
-                            description: "Refresh background image?"
-                        },
+                        changealart: { value: false, description: "Show change image alart?" },
+                        refreshimage: { value: false, description: "Refresh background image?" },
                     },
                     amounts: {
-                        refreshtime: {
-                            value: 1,
-                            min: 1,
-                            description: "Change Background image every (in minutes)"
-                        }
+                        refreshtime: { value: 1, min: 1, description: "Change Background image every (in minutes)" }
                     },
                 }
             };
             onStart() {
-                BDFDB.BDUtils.enableTheme('NotAnotherAnimeTheme', true);
+                if (!BDFDB.BDUtils.isThemeEnabled('NotAnotherAnimeTheme')) BDFDB.BDUtils.enableTheme('NotAnotherAnimeTheme', true);
                 this.changeimage();
                 this.forceUpdateAll();
+                this.refresh();
+            }
+            onStop() {
+                this.cleanup();
+                this.forceUpdateAll();
+                clearInterval(mainLoopId);
+            }
+            refresh() {
                 if (this.settings.general.refreshimage) {
                     if (mainLoopId) clearInterval(mainLoopId);
                     mainLoopId = setInterval(function() {
@@ -135,18 +130,11 @@ module.exports = (_ => {
                     }, (this.settings.amounts.refreshtime > this.defaults.amounts.refreshtime.min) ? this.settings.amounts.refreshtime * 60000 : this.defaults.amounts.refreshtime.min * 60000)
                 }
             }
-            onStop() {
-                this.cleanup();
-                this.forceUpdateAll();
-                clearInterval(mainLoopId);
-            }
             changeimage() {
                 let appMount = document.querySelector(BDFDB.dotCN.appmount);
-
                 let List = []
                 const urlList = BDFDB.DataUtils.load(backgroundImage, "urlsList");
                 const propertyNames = Object.values(urlList)
-
                 let i = 0;
                 for (const v of propertyNames) {
                     if (v.enabled) {
@@ -188,13 +176,7 @@ module.exports = (_ => {
                                     if (key == 'refreshimage') {
                                         if (this.settings.general.refreshimage) {
                                             clearInterval(mainLoopId);
-                                        } else {
-                                            if (mainLoopId) clearInterval(mainLoopId);
-                                            mainLoopId = setInterval(function() {
-                                                this.change = new backgroundImage;
-                                                this.change.changeimage()
-                                            }, (this.settings.amounts.refreshtime > this.defaults.amounts.refreshtime.min) ? this.settings.amounts.refreshtime * 60000 : this.defaults.amounts.refreshtime.min * 60000)
-                                        }
+                                        } else { this.refresh(); }
                                     }
                                 }
                             })).concat(Object.keys(this.defaults.amounts).map(key => BDFDB.ReactUtils.createElement(BDFDB.LibraryComponents.SettingsSaveItem, {
@@ -210,6 +192,7 @@ module.exports = (_ => {
                                 placeholder: "minutes"
                             })))
                         }));
+
                         settingsItems.push(BDFDB.ReactUtils.createElement(BDFDB.LibraryComponents.CollapseContainer, {
                             title: "Image List",
                             collapseStates: collapseStates,
@@ -250,7 +233,7 @@ module.exports = (_ => {
                                                 let url = settingsPanel.props._node.querySelector(".input-link " + BDFDB.dotCN.input).value.trim();
                                                 if (!name || name.length == 0) return BDFDB.NotificationUtils.toast("Fill out all fields to add a new Image.", { type: "danger" });
                                                 else if (urlsList[name]) return BDFDB.NotificationUtils.toast("the choosen Name already exists, please choose another Name", { type: "danger" });
-                                                else if (!validURL(url.toString()) && (url.substring(url.length - 3) !== 'png' || url.substring(url.length - 3) !== 'jpg' || url.substring(url.length - 3) !== 'gif')) return BDFDB.NotificationUtils.toast("The choosen link is not a valid url, Any images you use MUST end with .jpg or .png", { type: "danger" }); //todo
+                                                else if (!validURL(url.toString()) && (!inarray(formats, url.substring(url.length - 3)))) return BDFDB.NotificationUtils.toast("The choosen link is not a valid url, Any images you use MUST end with .jpg or .png", { type: "danger" }); //todo
                                                 else {
                                                     urlsList[name] = { enabled: true, value: url.toString() };
                                                     BDFDB.DataUtils.save(urlsList, this, "urlsList");
@@ -329,13 +312,7 @@ module.exports = (_ => {
                 }
                 this.forceUpdateAll();
                 this.changeimage();
-                if (this.settings.general.refreshimage) {
-                    if (mainLoopId) clearInterval(mainLoopId);
-                    mainLoopId = setInterval(function() {
-                        this.change = new backgroundImage;
-                        this.change.changeimage()
-                    }, (this.settings.amounts.refreshtime > this.defaults.amounts.refreshtime.min) ? this.settings.amounts.refreshtime * 60000 : this.defaults.amounts.refreshtime.min * 60000)
-                }
+                this.refresh();
             };
 
             forceUpdateAll() {
