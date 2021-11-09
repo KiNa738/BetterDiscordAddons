@@ -12,6 +12,12 @@
 TODO
 the plugin only works with theme. Check if user using a theme?
 \*/
+
+const fs = require("fs");
+const request = require("request");
+const path = require("path");
+
+
 module.exports = (_ => {
     const config = {
         "info": {
@@ -43,8 +49,8 @@ module.exports = (_ => {
         getDescription() { return `The Library Plugin needed for ${config.info.name} is missing. Open the Plugin Settings to download it. \n\n${config.info.description}`; }
 
         downloadLibrary() {
-            require("request").get("https://mwittrien.github.io/BetterDiscordAddons/Library/0BDFDB.plugin.js", (e, r, b) => {
-                if (!e && b && r.statusCode == 200) require("fs").writeFile(require("path").join(BdApi.Plugins.folder, "0BDFDB.plugin.js"), b, _ => BdApi.showToast("Finished downloading BDFDB Library", { type: "success" }));
+            request.get("https://mwittrien.github.io/BetterDiscordAddons/Library/0BDFDB.plugin.js", (e, r, b) => {
+                if (!e && b && r.statusCode == 200) fs.writeFile(path.join(BdApi.Plugins.folder, "0BDFDB.plugin.js"), b, _ => BdApi.showToast("Finished downloading BDFDB Library", { type: "success" }));
                 else BdApi.alert("Error", "Could not download BDFDB Library Plugin. Try again later or download it manually from GitHub: https://mwittrien.github.io/downloader/?library");
             });
         }
@@ -80,6 +86,23 @@ module.exports = (_ => {
 
         return class backgroundImage extends Plugin {
             onLoad() {
+                let theme = document.querySelector(BDFDB.dotCN.appmount).style.getPropertyValue("background-image")
+                if (!theme) {
+                    window.BDFDB_Global.downloadModal = true;
+                    BdApi.showConfirmationModal("Theme Missing", `The Theme needed for ${config.info.name} is missing. Please click "Download Now" to install it.`, {
+                        confirmText: "Download Now",
+                        cancelText: "Cancel",
+                        onCancel: _ => { delete window.BDFDB_Global.downloadModal; },
+                        onConfirm: _ => {
+                            delete window.BDFDB_Global.downloadModal;
+                            request.get("https://raw.githubusercontent.com/puckzxz/NotAnotherAnimeTheme/master/NotAnotherAnimeTheme.theme.css", (e, r, b) => {
+                                if (!e && b && r.statusCode == 200) {
+                                    fs.writeFile(path.join(BdApi.Themes.folder, "NotAnotherAnimeTheme.theme.css"), b, _ => BdApi.showToast("Finished downloading NotAnotherAnimeTheme", { type: "success" }))
+                                } else BdApi.alert("Error", "Could not download NotAnotherAnimeTheme Theme. Try again later or download it manually from GitHub: https://raw.githubusercontent.com/puckzxz/NotAnotherAnimeTheme/master/NotAnotherAnimeTheme.theme.css");
+                            });
+                        }
+                    });
+                }
                 this.defaults = {
                     general: {
                         changealart: {
@@ -101,6 +124,7 @@ module.exports = (_ => {
                 }
             };
             onStart() {
+                BDFDB.BDUtils.enableTheme('NotAnotherAnimeTheme', true);
                 this.changeimage();
                 this.forceUpdateAll();
                 if (this.settings.general.refreshimage) {
