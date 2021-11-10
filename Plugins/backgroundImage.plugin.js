@@ -5,7 +5,7 @@
  * @version 0.0.6
  * @description Pick A random background Image from a list. Important!! This plugin only works with better discord theme "NotAnotherAnimeTheme v3.2" for now
  * @source https://github.com/KiNa738/BetterDiscordAddons/tree/main/Plugins
- * @updateUrl https://github.com/KiNa738/BetterDiscordAddons/blob/main/Plugins/backgroundImage.plugin.js
+ * @updateUrl https://raw.githubusercontent.com/KiNa738/BetterDiscordAddons/main/Plugins/backgroundImage.plugin.js
  */
 
 const fs = require("fs");
@@ -19,12 +19,14 @@ module.exports = (_ => {
             "name": "backgroundImage",
             "author": "KiNa#4741",
             "version": "0.0.6",
-            "description": "Pick A random background Image from a list. Important!! This plugin only works with better discord theme 'NotAnotherAnimeTheme v3.2' for now"
+            "description": "Pick A random background Image from a list. Important!! This plugin only works with better discord theme 'NotAnotherAnimeTheme' for now"
         },
         "changeLog": {
+            "Note": {
+                "GIFs": "gif link's is acceptable and it does work with the theme"
+            },
             "added": {
                 "Auto change image": "Added option to auto refresh your image",
-                "Gif background": "Yes, you can add a fkin gif background now. Sheeeeesh"
             }
         }
     };
