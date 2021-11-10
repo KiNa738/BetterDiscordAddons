@@ -22,11 +22,9 @@ module.exports = (_ => {
             "description": "Pick A random background Image from a list. Important!! This plugin only works with better discord theme 'NotAnotherAnimeTheme' for now"
         },
         "changeLog": {
-            "Note": {
-                "GIFs": "gif link's is acceptable and it does work with the theme"
-            },
             "added": {
                 "Auto change image": "Added option to auto refresh your image",
+                "GIFs": "gif link's is acceptable and it does work with the theme"
             }
         }
     };
@@ -235,7 +233,8 @@ module.exports = (_ => {
                                                 let url = settingsPanel.props._node.querySelector(".input-link " + BDFDB.dotCN.input).value.trim();
                                                 if (!name || name.length == 0) return BDFDB.NotificationUtils.toast("Fill out all fields to add a new Image.", { type: "danger" });
                                                 else if (urlsList[name]) return BDFDB.NotificationUtils.toast("the choosen Name already exists, please choose another Name", { type: "danger" });
-                                                else if (!validURL(url.toString()) && (!inarray(formats, url.substring(url.length - 3)))) return BDFDB.NotificationUtils.toast("The choosen link is not a valid url, Any images you use MUST end with .jpg or .png", { type: "danger" }); //todo
+                                                else if (!validURL(url.toString())) return BDFDB.NotificationUtils.toast("The choosen link is not a valid url", { type: "danger" });
+                                                else if (formats.indexOf(url.substring(url.length - 3)) == -1) return BDFDB.NotificationUtils.toast("Any link you use MUST end with images formats", { type: "danger" });
                                                 else {
                                                     urlsList[name] = { enabled: true, value: url.toString() };
                                                     BDFDB.DataUtils.save(urlsList, this, "urlsList");
