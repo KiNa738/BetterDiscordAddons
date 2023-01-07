@@ -82,7 +82,7 @@ module.exports = (_ => {
 
         return class ChangeThemeImage extends Plugin {
             onLoad() {
-                //BDFDB.BDUtils.enableTheme('NotAnotherAnimeTheme', true);
+                BDFDB.BDUtils.enableTheme('NotAnotherAnimeTheme', true);
                 //let theme = document.querySelector(BDFDB.dotCN.appmount).style.getPropertyValue("background-image")
                 if (!BDFDB.BDUtils.getTheme('NotAnotherAnimeTheme')) {
                     window.BDFDB_Global.downloadModal = true;
@@ -111,7 +111,7 @@ module.exports = (_ => {
                 }
             };
             onStart() {
-                //if (!BDFDB.BDUtils.isThemeEnabled('NotAnotherAnimeTheme')) BDFDB.BDUtils.enableTheme('NotAnotherAnimeTheme', true);
+                if (!BDFDB.BDUtils.isThemeEnabled('NotAnotherAnimeTheme')) BDFDB.BDUtils.enableTheme('NotAnotherAnimeTheme', true);
                 this.changeimage();
                 this.forceUpdateAll();
                 this.refresh();
