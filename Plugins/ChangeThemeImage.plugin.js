@@ -1,7 +1,7 @@
 /**
  * @name ChangeThemeImage
  * @author KiNa
- * @authorId 252100217959219200
+ * @authorId 917859760370503690
  * @version 0.0.6
  * @description Pick A random background Image from a list. Important!! This plugin only works with better discord theme "NotAnotherAnimeTheme v3.2" for now
  * @source https://github.com/KiNa738/BetterDiscordAddons/tree/main/Plugins
@@ -17,7 +17,7 @@ module.exports = (_ => {
     const config = {
         "info": {
             "name": "ChangeThemeImage",
-            "author": "KiNa#4741",
+            "author": "KiNa#4238",
             "version": "0.0.6",
             "description": "Pick A random background Image from a list. Important!! This plugin only works with better discord theme 'NotAnotherAnimeTheme' for now"
         },
@@ -82,7 +82,7 @@ module.exports = (_ => {
 
         return class ChangeThemeImage extends Plugin {
             onLoad() {
-                BDFDB.BDUtils.enableTheme('NotAnotherAnimeTheme', true);
+                //BDFDB.BDUtils.enableTheme('NotAnotherAnimeTheme', true);
                 //let theme = document.querySelector(BDFDB.dotCN.appmount).style.getPropertyValue("background-image")
                 if (!BDFDB.BDUtils.getTheme('NotAnotherAnimeTheme')) {
                     window.BDFDB_Global.downloadModal = true;
@@ -111,7 +111,7 @@ module.exports = (_ => {
                 }
             };
             onStart() {
-                if (!BDFDB.BDUtils.isThemeEnabled('NotAnotherAnimeTheme')) BDFDB.BDUtils.enableTheme('NotAnotherAnimeTheme', true);
+                //if (!BDFDB.BDUtils.isThemeEnabled('NotAnotherAnimeTheme')) BDFDB.BDUtils.enableTheme('NotAnotherAnimeTheme', true);
                 this.changeimage();
                 this.forceUpdateAll();
                 this.refresh();
@@ -199,7 +199,7 @@ module.exports = (_ => {
                             children: [
                                 BDFDB.ReactUtils.createElement(BDFDB.LibraryComponents.FormComponents.FormTitle, {
                                     className: BDFDB.disCN.marginbottom4,
-                                    tag: BDFDB.LibraryComponents.FormComponents.FormTitle.Tags.H3,
+                                    tag: BDFDB.LibraryComponents.FormComponents.FormTags.H3,
                                     children: "Add additional image links: "
                                 }),
                                 BDFDB.ReactUtils.createElement(BDFDB.LibraryComponents.Flex, {
