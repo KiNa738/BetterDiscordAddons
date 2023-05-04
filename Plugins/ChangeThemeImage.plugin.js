@@ -145,14 +145,14 @@ module.exports = (_ => {
                 if (!List || List.length == 0) return
                 let random = List[Math.floor(Math.random() * List.length)];
                 try {
-                    appMount.style.setProperty("background-image", "url(" + random + ")");
+                    appMount.style.setProperty("background-image", "url(" + random + ")", "important");
                 } catch (err) { BdApi.alert("Error", "Could not"); }
                 const obj = BDFDB.DataUtils.load(ChangeThemeImage, "general");
                 if (obj.changealart /*&& !obj.refreshimage*/ ) BdApi.alert("Background image", `Your Image: ${random}`);
             }
             cleanup() {
                 try {
-                    document.querySelector(BDFDB.dotCN.appmount).style.setProperty("background-image", "var(--theme-background-image)");
+                    document.querySelector(BDFDB.dotCN.appmount).style.setProperty("background-image", "var(--theme-background-image)", "important");
                 } catch (err) { BdApi.alert("Error", "Could not"); }
             }
             getSettingsPanel(collapseStates = {}) {
